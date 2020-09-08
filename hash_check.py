@@ -75,8 +75,7 @@ def file_processor(workingdir, filehash):
 
 def main(dirpath, filehash):
     if not hash_regex(filehash):
-        sys.exit(
-            "[ERROR] Please use one of the following: md5, sha1, sha256, sha512")
+        sys.exit("\033[31m[ERROR]\033[0m Please use one of the following hash types: md5, sha1, sha256, sha512")  # nopep8
     else:
         try:
             file_processor(dirpath, filehash)
@@ -105,7 +104,7 @@ if __name__ == "__main__":
                                         {__author__}
     """
 
-    print(banner)
+    print(f"\033[36m{banner}\033[0m")
 
     parser = ArgumentParser()
     parser.add_argument("dirpath", help="directory path to scan")
