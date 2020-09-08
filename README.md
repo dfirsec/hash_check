@@ -1,4 +1,13 @@
-# hash_check
+```console
+        __  __           __       ________              __
+       / / / /___ ______/ /_     / ____/ /_  ___  _____/ /__
+      / /_/ / __ `/ ___/ __ \   / /   / __ \/ _ \/ ___/ //_/
+     / __  / /_/ (__  ) / / /  / /___/ / / /  __/ /__/ ,<
+    /_/ /_/\__,_/____/_/ /_/   \____/_/ /_/\___/\___/_/|_|
+
+                                        v0.0.2
+                                        DFIRSec (@pulsecode)
+```
 
 Search directories for a given file hash.  Currently limited to only md5, sha1, sha256, and sha512 hash types.
 
