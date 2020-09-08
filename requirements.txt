@@ -1,4 +1,3 @@
-argparse
-pandas
-tabulate
-tqdm
+colorama==0.4.3
+tqdm==4.48.2
+wcmatch==7.1
