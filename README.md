@@ -1,6 +1,6 @@
 # hash_check
 
-Search directories for a given file hash.  Currently limited to only sha256 hash type.
+Search directories for a given file hash.  Currently limited to only md5, sha1, sha256, and sha512 hash types.
 
 ## Installation
 
