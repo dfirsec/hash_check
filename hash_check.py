@@ -11,7 +11,7 @@ from tabulate import tabulate
 from tqdm import tqdm
 
 __author__ = "DFIRSec (@pulsecode)"
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 __description__ = "Search through directories for a give file hash (sha256)."
 
 # For Windows systems
@@ -86,7 +86,7 @@ def main(dirpath, filehash):
             if df.loc[df['Hash'] == filehash].any()[0]:
                 print(f"\n{tabulate(df.loc[df['Hash'] == filehash], showindex=False, headers=columns, tablefmt='github')}")  # nopep8
             else:
-                print("\nHash not found.")
+                print(f"\n{hash_regex(filehash).upper()} hash '{filehash}' was not found.") #nopep8
 
         except Exception as error:
             sys.exit(error)
