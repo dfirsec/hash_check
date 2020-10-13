@@ -13,11 +13,10 @@ from tqdm import tqdm
 
 __author__ = "DFIRSec (@pulsecode)"
 __version__ = "v0.0.4"
-__description__ = "Search through directories for a give file hash (sha256)."
+__description__ = "Search directories for a give file hash (sha256)."
 
 # terminal colors
 init()
-MAG = Fore.MAGENTA
 YEL = Fore.YELLOW
 RST = Fore.RESET
 PROC = f'{YEL}> {RST}'
@@ -37,10 +36,10 @@ def hash_regex(_str):
     return match
 
 
-def get_hash(file_path, _str):
+def get_hash(filepath, _str):
     file_hash = ''
     hash_str = hash_regex(_str)
-    with open(file_path, 'rb') as _file:
+    with open(filepath, 'rb') as _file:
         if hash_str == 'md5':
             file_hash = hashlib.md5(_file.read()).hexdigest()
         elif hash_str == 'sha1':
