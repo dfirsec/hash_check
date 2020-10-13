@@ -7,16 +7,22 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 import pandas as pd
+from colorama import Fore, init
 from tabulate import tabulate
 from tqdm import tqdm
 
 __author__ = "DFIRSec (@pulsecode)"
-__version__ = "0.0.3"
+__version__ = "v0.0.4"
 __description__ = "Search through directories for a give file hash (sha256)."
 
-# For Windows systems
-# set TABULATE_INSTALL=lib-only
+# terminal colors
+init()
+MAG = Fore.MAGENTA
+YEL = Fore.YELLOW
+RST = Fore.RESET
+PROC = f'{YEL}> {RST}'
 
+# file list holder
 file_list = []
 
 
@@ -49,10 +55,10 @@ def get_hash(file_path, _str):
 
 def file_processor(workingdir, filehash):
     dirpath = Path(workingdir)
-    print(f"Scanning: {dirpath} ...")
+    print(f"{PROC}Scanning: {dirpath} ...")
     for root, _, files in tqdm(os.walk(dirpath),
                                ascii=True,
-                               desc=f"Processing",
+                               desc=f"{PROC}Processing",
                                ncols=80, unit=" files"):
         for filename in files:
             try:
@@ -66,20 +72,18 @@ def file_processor(workingdir, filehash):
             except KeyboardInterrupt:
                 sys.exit('= Exited =')
             except PermissionError:
-                print("Permission denied:", os.path.join(root, filename))
                 continue
             except OSError as error:
-                print("OS Error encounterd:", error)
+                print("OS Error encountered:", error)
                 continue
-
-
+    
 def main(dirpath, filehash):
     if not hash_regex(filehash):
-        sys.exit("\033[31m[ERROR]\033[0m Please use one of the following hash types: md5, sha1, sha256, sha512")  # nopep8
+        sys.exit("\033[31m[ERROR]\033[0m Please use one of the following hash types: MD5, SHA1, SAH256, SHA512")  # nopep8
     else:
         try:
             file_processor(dirpath, filehash)
-
+            
             columns = ["File", "Path", "Created", "Modified", "Size (B)", "Hash"]  # nopep8
             df = pd.DataFrame.from_records(file_list, columns=columns)
 
@@ -100,7 +104,7 @@ if __name__ == "__main__":
      / __  / /_/ (__  ) / / /  / /___/ / / /  __/ /__/ ,<
     /_/ /_/\__,_/____/_/ /_/   \____/_/ /_/\___/\___/_/|_|
 
-                                        v{__version__}
+                                        {__version__}
                                         {__author__}
     """
 
