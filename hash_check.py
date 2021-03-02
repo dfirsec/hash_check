@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 __author__ = "DFIRSec (@pulsecode)"
 __version__ = "v0.0.5"
-__description__ = "Search directories for a give file hash (sha256)."
+__description__ = "Search directories for a give file hash."
 
 # terminal colors
 init()
