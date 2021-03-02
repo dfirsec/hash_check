@@ -1,6 +1,6 @@
 # Hash Check
 
-Search directories for a given file hash.  Currently limited to md5, sha1, sha256, and sha512 hash types.
+Search directories for a given file hash.  Currently limited to md5, sha1, sha256, and sha512 hash types.  Option to save all files hashed to json file.
 
 :bulb: Note: To optimize processing, try to limit directory depth, i.e., number of subfolders to process.
 
@@ -24,7 +24,7 @@ pip install -r requirements.txt
                                         v0.0.5
                                         DFIRSec (@pulsecode)
 
-usage: hash_check.py [-h] PATH HASH
+usage: hash_check.py [-h] [-s] PATH HASH
 
 positional arguments:
   PATH        directory path to scan
@@ -32,6 +32,7 @@ positional arguments:
 
 optional arguments:
   -h, --help  show this help message and exit
+  -s, --save  Save hashed results to file
 ```
 
 ## Example Run
