@@ -21,16 +21,17 @@ pip install -r requirements.txt
      / __  / /_/ (__  ) / / /  / /___/ / / /  __/ /__/ ,<
     /_/ /_/\__,_/____/_/ /_/   \____/_/ /_/\___/\___/_/|_|
 
-                                        v0.0.2
+                                        v0.0.5
                                         DFIRSec (@pulsecode)
 
-usage: hash_check.py [-h] dirpath filehash
-
-Search for given file hash
+usage: hash_check.py [-h] PATH HASH
 
 positional arguments:
-  dirpath     directory path to scan
-  filehash    the file hash you're searching for
+  PATH        directory path to scan
+  HASH        the file hash you're searching for
+
+optional arguments:
+  -h, --help  show this help message and exit
 ```
 
 ## Example Run
