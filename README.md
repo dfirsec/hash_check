@@ -1,6 +1,6 @@
 # Hash Check
 
-Search directories for a given file hash.  Currently limited to md5, sha1, sha256, and sha512 hash types.  Option to save all files hashed to json file.
+Search directories for a given file hash.  Currently limited to md5, sha1, sha256, and sha512 hash types.  Option to save all files hashed to json file (can be used as an index).
 
 :bulb: Note: To optimize processing, try to limit directory depth, i.e., number of subfolders to process.
 
