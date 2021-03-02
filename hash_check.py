@@ -1,9 +1,11 @@
 import hashlib
+import json
 import os
 import re
 import sys
 import time
 from argparse import ArgumentParser
+from functools import partial
 from pathlib import Path
 
 import pandas as pd
@@ -25,36 +27,24 @@ PROC = f"{YEL}> {RST}"
 file_list = []
 
 
-def hash_regex(_str):
+def hash_regex(hash_str):
     hash_dict = dict(
         md5=re.compile(r"\b[A-Fa-f0-9]{32}\b"),
         sha1=re.compile(r"\b[A-Fa-f0-9]{40}\b"),
         sha256=re.compile(r"\b[A-Fa-f0-9]{64}\b"),
     )
-    match = "".join([k for k, v in hash_dict.items() if re.match(v, _str)])
+    match = "".join([k for k, v in hash_dict.items() if re.match(v, hash_str)])
     return match
 
 
-def get_hash(filename, hash_str, blocksize=65536):
-    global hsh
-    hash_type = hash_regex(hash_str)
-
-    if hash_type == "md5":
-        hsh = hashlib.md5()
-    elif hash_type == "sha1":
-        hsh = hashlib.sha1()
-    elif hash_type == "sha256":
-        hsh = hashlib.sha256()
-    elif hash_type == "sha512":
-        hsh = hashlib.sha512()
+def gethash(filename, hash_str, blocksize=65536):
+    algorithm = hash_regex(hash_str)
+    hasher = hashlib.new(algorithm)
 
     with open(filename, "rb") as f:
-        while True:
-            buf = f.read(blocksize)
-            if not buf:
-                break
-            hsh.update(buf)
-    return hsh.hexdigest()
+        for chunk in iter(partial(f.read, blocksize), b""):
+            hasher.update(chunk)
+    return hasher.hexdigest()
 
 
 def walkdir(folder):
@@ -63,9 +53,8 @@ def walkdir(folder):
             yield os.path.abspath(os.path.join(root, filename))
 
 
-def file_processor(workingdir, fhash):
+def processor(workingdir, fhash):
     dirpath = Path(workingdir)
-    print(f"{PROC}Scanning: {dirpath} ...")
     filecounter = 0
     for filepath in walkdir(dirpath):
         filecounter += 1
@@ -75,7 +64,19 @@ def file_processor(workingdir, fhash):
             ctime = time.ctime(os.stat(filepath).st_ctime)
             mtime = time.ctime(os.stat(filepath).st_mtime)
             fsize = os.stat(filepath).st_size
-            file_list.append((filepath, Path(filepath).parent, ctime, mtime, fsize, get_hash(filepath, fhash)))
+
+            # create results dict to hold all key value pairs
+            results_dict = {
+                "File": filepath,
+                "Path": str(Path(filepath).parent),
+                "Created": ctime,
+                "Modified": mtime,
+                "Size (B)": fsize,
+                "Hash": gethash(filepath, fhash),
+            }
+
+            # append results dictionary to global file list
+            file_list.append(results_dict.copy())
 
         except KeyboardInterrupt:
             sys.exit("= Exited =")
@@ -86,22 +87,29 @@ def file_processor(workingdir, fhash):
             continue
 
 
-def main(dirpath, fhash):
+def main(dirpath, fhash, save=None):
     if not hash_regex(fhash):
         sys.exit("\033[31m[ERROR]\033[0m Please use one of the following hash types: MD5, SHA1, SHA256")
     else:
+        print(f"{PROC}Scanning: {dirpath} ...")
         try:
-            file_processor(dirpath, fhash)
+            # initate file processing
+            processor(dirpath, fhash)
 
+            # tabulate output to terminal
             columns = ["File", "Path", "Created", "Modified", "Size (B)", "Hash"]
             df = pd.DataFrame.from_records(file_list, columns=columns)
-
-            if df.loc[df["Hash"] == fhash].any()[0]:
-                print(
-                    f"\n{tabulate(df.loc[df['Hash'] == fhash], showindex=False, headers=columns, tablefmt='github')}"
-                )
+            
+            match = df.loc[df["Hash"] == fhash]
+            if match.any()[0]:
+                print(f"\n{tabulate(match, showindex=False, headers=columns, tablefmt='github')}")
             else:
-                print(f"\n{hash_regex(fhash).upper()} hash '{fhash}' was not found.")
+                print(f"\n[-] No results for {hash_regex(fhash).upper()} hash: {fhash}")
+
+            if file_list and save:
+                with open("hashed_files.json", "w") as f:
+                    json.dump(file_list, f, indent=4)
+
         except Exception as error:
             sys.exit(error)
 
@@ -123,7 +131,9 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("PATH", help="directory path to scan")
     parser.add_argument("HASH", help="the file hash you're searching for")
+    parser.add_argument("-s", "--save", action="store_true", help="Save hashed results to file")
     args = parser.parse_args()
     HASH = args.HASH.lower()
+    save = args.save
 
-    main(args.PATH, HASH)
+    main(args.PATH, HASH, save)
