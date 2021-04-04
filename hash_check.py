@@ -14,11 +14,12 @@ from tabulate import tabulate
 from tqdm import tqdm
 
 __author__ = "DFIRSec (@pulsecode)"
-__version__ = "v0.0.5"
+__version__ = "v0.0.6"
 __description__ = "Search directories for a give file hash."
 
 # terminal colors
 init()
+CYN = Fore.CYAN
 YEL = Fore.YELLOW
 RST = Fore.RESET
 PROC = f"{YEL}> {RST}"
@@ -56,6 +57,7 @@ def walkdir(folder):
 def processor(workingdir, fhash):
     dirpath = Path(workingdir)
     filecounter = 0
+    print(f"{PROC}Getting file count ...")
     for filepath in walkdir(dirpath):
         filecounter += 1
 
@@ -99,10 +101,13 @@ def main(dirpath, fhash, save=None):
             # tabulate output to terminal
             columns = ["File", "Path", "Created", "Modified", "Size (B)", "Hash"]
             df = pd.DataFrame.from_records(file_list, columns=columns)
-            
+
             match = df.loc[df["Hash"] == fhash]
             if match.any()[0]:
                 print(f"\n{tabulate(match, showindex=False, headers=columns, tablefmt='github')}")
+                with open("results.json", "w") as f:
+                    json.dump(file_list, f, indent=4)
+                print(f"\n{PROC}Results saved to {CYN}results.json{RST} file")
             else:
                 print(f"\n[-] No results for {hash_regex(fhash).upper()} hash: {fhash}")
 
@@ -133,7 +138,9 @@ if __name__ == "__main__":
     parser.add_argument("HASH", help="the file hash you're searching for")
     parser.add_argument("-s", "--save", action="store_true", help="Save hashed results to file")
     args = parser.parse_args()
+    
+    PATH = args.PATH
     HASH = args.HASH.lower()
-    save = args.save
+    SAVE = args.save
 
-    main(args.PATH, HASH, save)
+    main(PATH, HASH, SAVE)
