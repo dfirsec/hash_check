@@ -1,6 +1,6 @@
 # Hash Check
 
-[![DeepSource](https://deepsource.io/gh/dfirsec/hash_check.svg/?label=active+issues&show_trend=true&token=GvslOYdvfUSrnF48E506c989)](https://deepsource.io/gh/dfirsec/hash_check/?ref=repository-badge)
+[![DeepSource](https://deepsource.io/gh/dfirsec/hash_check.svg/?label=active+issues&show_trend=true&token=GvslOYdvfUSrnF48E506c989)](https://deepsource.io/gh/dfirsec/hash_check/?ref=repository-badge) ![Generic badge](https://img.shields.io/badge/python-3.8-blue.svg) [![Twitter](https://img.shields.io/badge/Twitter-@pulsecode-blue.svg)](https://twitter.com/pulsecode)
 
 Search directories for a given file hash.  Currently limited to md5, sha1, sha256, and sha512 hash types.  Option to save all files hashed to json file (can be used as an index).
 
