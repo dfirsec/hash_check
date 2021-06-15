@@ -56,10 +56,9 @@ def walkdir(folder):
 
 def processor(workingdir, fhash):
     dirpath = Path(workingdir)
-    filecounter = 0
-    print(f"{PROC}Getting file count ...")
-    for filepath in walkdir(dirpath):
-        filecounter += 1
+    print(f"{PROC} Getting file count...", sep=" ", end=" ")
+    filecounter = len(list(walkdir(dirpath)))
+    print(f"{filecounter:,} files")
 
     for filepath in tqdm(walkdir(dirpath), total=filecounter, desc=f"{PROC}Processing", ncols=90, unit=" files"):
         try:
