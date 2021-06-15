@@ -60,7 +60,13 @@ def processor(workingdir, fhash):
     filecounter = len(list(walkdir(dirpath)))
     print(f"{filecounter:,} files")
 
-    for filepath in tqdm(walkdir(dirpath), total=filecounter, desc=f"{PROC}Processing", ncols=90, unit=" files"):
+    for filepath in tqdm(
+        walkdir(dirpath),
+        total=filecounter,
+        desc=f"{PROC}Processing",
+        ncols=90,
+        unit=" files",
+    ):
         try:
             ctime = time.ctime(os.stat(filepath).st_ctime)
             mtime = time.ctime(os.stat(filepath).st_mtime)
@@ -90,7 +96,9 @@ def processor(workingdir, fhash):
 
 def main(dirpath, fhash, save=None):
     if not hash_regex(fhash):
-        sys.exit("\033[31m[ERROR]\033[0m Please use one of the following hash types: MD5, SHA1, SHA256")
+        sys.exit(
+            "\033[31m[ERROR]\033[0m Please use one of the following hash types: MD5, SHA1, SHA256"
+        )
     else:
         print(f"{PROC}Scanning: {dirpath} ...")
 
@@ -103,7 +111,9 @@ def main(dirpath, fhash, save=None):
         match = df.loc[df["Hash"] == fhash]
 
         if match.any()[0]:
-            print(f"\n{tabulate(df, showindex=False, headers=columns, tablefmt='github')}")
+            print(
+                f"\n{tabulate(df, showindex=False, headers=columns, tablefmt='github')}"
+            )
             results = df.to_dict("index")
             with open("results.json", "w") as f:
                 json.dump(results, f, indent=4)
@@ -133,7 +143,9 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("PATH", help="directory path to scan")
     parser.add_argument("HASH", help="the file hash you're searching for")
-    parser.add_argument("-s", "--save", action="store_true", help="Save hashed results to file")
+    parser.add_argument(
+        "-s", "--save", action="store_true", help="Save hashed results to file"
+    )
     args = parser.parse_args()
 
     PATH = args.PATH
