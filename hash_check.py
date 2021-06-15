@@ -14,7 +14,7 @@ from tabulate import tabulate
 from tqdm import tqdm
 
 __author__ = "DFIRSec (@pulsecode)"
-__version__ = "v0.0.6"
+__version__ = "v0.0.7"
 __description__ = "Search directories for a give file hash."
 
 # terminal colors
@@ -69,7 +69,7 @@ def processor(workingdir, fhash):
 
             # create results dict to hold all key value pairs
             results_dict = {
-                "File": filepath,
+                "File": str(Path(filepath).name),
                 "Path": str(Path(filepath).parent),
                 "Created": ctime,
                 "Modified": mtime,
@@ -98,15 +98,16 @@ def main(dirpath, fhash, save=None):
         # initate file processing
         processor(dirpath, fhash)
 
-        # tabulate output to terminal
+        # tabulate output to terminal and find match
         columns = ["File", "Path", "Created", "Modified", "Size (B)", "Hash"]
         df = pd.DataFrame.from_records(file_list, columns=columns)
-
         match = df.loc[df["Hash"] == fhash]
+
         if match.any()[0]:
-            print(f"\n{tabulate(match, showindex=False, headers=columns, tablefmt='github')}")
+            print(f"\n{tabulate(df, showindex=False, headers=columns, tablefmt='github')}")
+            results = df.to_dict("index")
             with open("results.json", "w") as f:
-                json.dump(file_list, f, indent=4)
+                json.dump(results, f, indent=4)
             print(f"\n{PROC}Results saved to {CYN}results.json{RST} file")
         else:
             print(f"\n[-] No results for {hash_regex(fhash).upper()} hash: {fhash}")
