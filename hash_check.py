@@ -94,29 +94,26 @@ def main(dirpath, fhash, save=None):
         sys.exit("\033[31m[ERROR]\033[0m Please use one of the following hash types: MD5, SHA1, SHA256")
     else:
         print(f"{PROC}Scanning: {dirpath} ...")
-        try:
-            # initate file processing
-            processor(dirpath, fhash)
 
-            # tabulate output to terminal
-            columns = ["File", "Path", "Created", "Modified", "Size (B)", "Hash"]
-            df = pd.DataFrame.from_records(file_list, columns=columns)
+        # initate file processing
+        processor(dirpath, fhash)
 
-            match = df.loc[df["Hash"] == fhash]
-            if match.any()[0]:
-                print(f"\n{tabulate(match, showindex=False, headers=columns, tablefmt='github')}")
-                with open("results.json", "w") as f:
-                    json.dump(file_list, f, indent=4)
-                print(f"\n{PROC}Results saved to {CYN}results.json{RST} file")
-            else:
-                print(f"\n[-] No results for {hash_regex(fhash).upper()} hash: {fhash}")
+        # tabulate output to terminal
+        columns = ["File", "Path", "Created", "Modified", "Size (B)", "Hash"]
+        df = pd.DataFrame.from_records(file_list, columns=columns)
 
-            if file_list and save:
-                with open("hashed_files.json", "w") as f:
-                    json.dump(file_list, f, indent=4)
+        match = df.loc[df["Hash"] == fhash]
+        if match.any()[0]:
+            print(f"\n{tabulate(match, showindex=False, headers=columns, tablefmt='github')}")
+            with open("results.json", "w") as f:
+                json.dump(file_list, f, indent=4)
+            print(f"\n{PROC}Results saved to {CYN}results.json{RST} file")
+        else:
+            print(f"\n[-] No results for {hash_regex(fhash).upper()} hash: {fhash}")
 
-        except Exception as error:
-            sys.exit(error)
+        if file_list and save:
+            with open("hashed_files.json", "w") as f:
+                json.dump(file_list, f, indent=4)
 
 
 if __name__ == "__main__":
@@ -138,9 +135,12 @@ if __name__ == "__main__":
     parser.add_argument("HASH", help="the file hash you're searching for")
     parser.add_argument("-s", "--save", action="store_true", help="Save hashed results to file")
     args = parser.parse_args()
-    
+
     PATH = args.PATH
     HASH = args.HASH.lower()
     SAVE = args.save
 
-    main(PATH, HASH, SAVE)
+    if Path(PATH).exists():
+        main(PATH, HASH, SAVE)
+    else:
+        print(f"Path does not exist: {PATH}")
