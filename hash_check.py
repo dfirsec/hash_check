@@ -14,7 +14,7 @@ from tabulate import tabulate
 from tqdm import tqdm
 
 __author__ = "DFIRSec (@pulsecode)"
-__version__ = "v0.0.7"
+__version__ = "v0.0.8"
 __description__ = "Search directories for a give file hash."
 
 # terminal colors
@@ -42,8 +42,8 @@ def gethash(filename, hash_str, blocksize=65536):
     algorithm = hash_regex(hash_str)
     hasher = hashlib.new(algorithm)
 
-    with open(filename, "rb") as f:
-        for chunk in iter(partial(f.read, blocksize), b""):
+    with open(filename, "rb") as _file:
+        for chunk in iter(partial(_file.read, blocksize), b""):
             hasher.update(chunk)
     return hasher.hexdigest()
 
@@ -56,7 +56,7 @@ def walkdir(folder):
 
 def processor(workingdir, fhash):
     dirpath = Path(workingdir)
-    print(f"{PROC} Getting file count...", sep=" ", end=" ")
+    print(f"{PROC}Getting file count...", sep=" ", end=" ")
     filecounter = len(list(walkdir(dirpath)))
     print(f"{filecounter:,} files")
 
@@ -99,21 +99,21 @@ def main(dirpath, fhash, save=None):
 
         # tabulate output to terminal and find match
         columns = ["File", "Path", "Created", "Modified", "Size (B)", "Hash"]
-        df = pd.DataFrame.from_records(file_list, columns=columns)
-        match = df.loc[df["Hash"] == fhash]
+        data = pd.DataFrame.from_records(file_list, columns=columns)
+        match = data.loc[data["Hash"] == fhash]
 
         if match.any()[0]:
-            print(f"\n{tabulate(df, showindex=False, headers=columns, tablefmt='github')}")
-            results = df.to_dict("index")
-            with open("results.json", "w") as f:
-                json.dump(results, f, indent=4)
+            print(f"\n{tabulate(match, showindex=False, headers=columns, tablefmt='github')}")
+            results = match.to_dict("index")
+            with open("results.json", "w") as _file:
+                json.dump(results, _file, indent=4)
             print(f"\n{PROC}Results saved to {CYN}results.json{RST} file")
         else:
             print(f"\n[-] No results for {hash_regex(fhash).upper()} hash: {fhash}")
 
         if file_list and save:
-            with open("hashed_files.json", "w") as f:
-                json.dump(file_list, f, indent=4)
+            with open("hashed_files.json", "w") as _file:
+                json.dump(file_list, _file, indent=4)
 
 
 if __name__ == "__main__":
