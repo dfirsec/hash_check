@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 __author__ = "DFIRSec (@pulsecode)"
 __version__ = "v0.0.8"
-__description__ = "Search directories for a give file hash."
+__description__ = "Search directories for a given file hash."
 
 # terminal colors
 init()
