@@ -51,7 +51,7 @@ def gethash(filename, hash_str, blocksize=65536):
 def walkdir(folder):
     for root, _, files in os.walk(folder):
         for filename in files:
-            yield os.path.abspath(os.path.join(root, filename))
+            yield Path(root, filename).resolve()
 
 
 def processor(workingdir, fhash):
